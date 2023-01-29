@@ -20,6 +20,7 @@ services:
       - PORT=3001
       - HOST=http://realworld-docker.com
       - MONGO_URL=mongodb://api_db:27017/api
+      - AUTH_API_URL=http://auth:3002/api
     depends_on:
       - api_db
 
@@ -33,6 +34,7 @@ services:
     environment:
       - PORT=3002
       - MONGO_URL=mongodb://auth_db:27017/auth
+      - API_URL=http://api:3001/api
     depends_on:
       - auth_db
 
@@ -47,6 +49,17 @@ services:
     container_name: realworld-docker-auth-db
     volumes:
       - mongodb_auth:/data/db
+
+
+  nginx:
+    image: nginx:stable-alpine
+    container_name: realworld-docker-nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.prod.conf:/etc/nginx/conf.d/nginx.conf
+    depends_on:
+      - frontend
 
 volumes:
     mongodb_api:
